@@ -10,6 +10,7 @@ const tokenManager = require("../utils/tokenManager");
  * Fetch product data directly from DB
  */
 async function fetchProductData() {
+  console.log('fetching product data')
   const [results] = await utilities.db.query('SELECT * FROM pricelist WHERE available_on_ll = true');
   return results;
 }

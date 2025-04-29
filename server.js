@@ -4,7 +4,7 @@ const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
-const inventoryRoutes = require("./src/routes/productRoutes");
+const productRoutes = require("./src/routes/productRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 
 const app = express();
@@ -13,8 +13,8 @@ app.use(helmet());
 app.use(cors());
 app.use(rateLimit({ windowMs: 5 * 60 * 1000, max: 100 }));
 
-app.use("/dff/v2", inventoryRoutes);
-app.use("/dff/v2", authRoutes);        // Mount auth routes
+app.use("/dff/v2", productRoutes);
+app.use("/dff/v2", authRoutes);        
 
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');

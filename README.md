@@ -6,3 +6,8 @@ The Killdeer symbolizes resilience, adaptability, and steady growth — traits w
 npm install
 npm start
 ```
+
+Testing:
+```
+http://localhost:3402/dff/v2/get-product-data
+```
