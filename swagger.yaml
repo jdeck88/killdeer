@@ -1,0 +1,51 @@
+openapi: 3.0.0
+info:
+  title: DFF Product API
+  version: 2.0.0
+  description: API for managing inventory and pricing in LocalLine
+servers:
+  - url: http://localhost:3402/dff/v2
+
+paths:
+  /data:
+    get:
+      summary: Get inventory data
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+
+  /update/{id}:
+    put:
+      summary: Update inventory item
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                visible:
+                  type: boolean
+                track_inventory:
+                  type: boolean
+                stock_inventory:
+                  type: integer
+      responses:
+        '200':
+          description: Update successful
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
