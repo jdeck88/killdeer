@@ -30,28 +30,26 @@ async function getAccessToken(p_username, p_password) {
   return auth.access;
 }
 
-// sendEmail passes in emailOptions as argument
 async function sendEmail(emailOptions) {
-  console.log('sendEmail function')
-  // Create a Nodemailer transporter
+  console.log('sendEmail function');
+
   const transporter = nodemailer.createTransport({
-    service: "Gmail", // e.g., "Gmail" or use your SMTP settings
+    service: "Gmail",
     auth: {
       user: process.env.MAIL_USER,
       pass: process.env.MAIL_ACCESS,
     },
   });
 
-  // Send the email with the attachment
-  transporter.sendMail(emailOptions, (error, info) => {
-    if (error) {
-      console.error("Error sending email:", error);
-    } else {
-      console.log("Email sent:", info.response);
-    }
-  });
+  // ✅ return the Promise so it can be awaited
+  try {
+    const info = await transporter.sendMail(emailOptions);
+    console.log("✅ Email sent:", info.response);
+  } catch (error) {
+    console.error("❌ Error sending email:", error);
+    throw error; // optional: rethrow if you want upstream to handle it
+  }
 }
-
 // ✅ Secure Database Connection
 const db = mysql.createPool({
   host: process.env.DFF_DB_HOST,

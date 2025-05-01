@@ -8,7 +8,7 @@ const BASE_CATALOG_URL = 'https://connect.squareup.com/v2/catalog/list';
 const BASE_OBJECT_URL = 'https://connect.squareup.com/v2/catalog/object';
 
 const months = [
-  '2025-03', '2025-04'
+  '2025-05'
 ];
 
 const MAX_DEPTH = 100;
