@@ -4,18 +4,19 @@ const axios = require('axios');
 const ACCESS_TOKEN = process.env.SQUARE_ACCESS_TOKEN;
 const LOCATION_ID = process.env.SQUARE_LOCATION_ID;
 const BASE_ORDERS_URL = 'https://connect.squareup.com/v2/orders/search';
-const BASE_CATALOG_URL = 'https://connect.squareup.com/v2/catalog/object';
+const BASE_CATALOG_URL = 'https://connect.squareup.com/v2/catalog/list';
+const BASE_OBJECT_URL = 'https://connect.squareup.com/v2/catalog/object';
 
 const months = [
-  '2024-01', '2024-02', '2024-03', '2024-04', '2024-05', '2024-06',
-  '2024-07', '2024-08', '2024-09', '2024-10', '2024-11', '2024-12'
+  '2025-03', '2025-04'
 ];
 
 const MAX_DEPTH = 100;
 
-// Simple in-memory caches
-const catalogCache = {};
-const categoryNameCache = {};
+// In-memory mappings
+const variationToItem = {};
+const itemToCategory = {};
+const categoryIdToName = {};
 
 function getMonthRange(month) {
   const start = new Date(`${month}-01T00:00:00Z`);
@@ -23,6 +24,38 @@ function getMonthRange(month) {
   end.setUTCMonth(start.getUTCMonth() + 1);
   end.setUTCSeconds(-1);
   return { begin_time: start.toISOString(), end_time: end.toISOString() };
+}
+
+async function fetchFullCatalog() {
+  let cursor = null;
+  do {
+    const response = await axios.get(`${BASE_CATALOG_URL}?types=ITEM,ITEM_VARIATION,CATEGORY${cursor ? `&cursor=${cursor}` : ''}`, {
+      headers: { Authorization: `Bearer ${ACCESS_TOKEN}` }
+    });
+
+    const objects = response.data.objects || [];
+    for (const obj of objects) {
+	  //console.log("DEBUG item_data:", obj);
+
+      const { type, id } = obj;
+
+      if (type === 'CATEGORY') {
+        categoryIdToName[id] = obj.category_data?.name || 'Unnamed Category';
+      }
+
+      if (type === 'ITEM') {
+	  itemToCategory[id] = obj.item_data?.category_id || null;
+
+      }
+
+      if (type === 'ITEM_VARIATION') {
+        const itemId = obj.item_variation_data?.item_id;
+        if (itemId) variationToItem[id] = itemId;
+      }
+    }
+
+    cursor = response.data.cursor;
+  } while (cursor);
 }
 
 async function fetchOrdersForMonth(begin_time, end_time, cursor = null, collected = [], depth = 0) {
@@ -62,45 +95,67 @@ async function fetchOrdersForMonth(begin_time, end_time, cursor = null, collecte
   return collected;
 }
 
-async function getCategoryNameFromItem(itemId) {
-  // Check the cache first
-  if (catalogCache[itemId]) return catalogCache[itemId];
+async function resolveCategoryNameWithFallback(variationId) {
+  let itemId = variationToItem[variationId];
 
-  try {
-    const itemResponse = await axios.get(`${BASE_CATALOG_URL}/${itemId}`, {
-      headers: { Authorization: `Bearer ${ACCESS_TOKEN}` }
-    });
+  // 🔍 Step 1: Try to resolve item from variation if unknown
+  if (!itemId) {
+    try {
+      const response = await axios.get(`https://connect.squareup.com/v2/catalog/object/${variationId}`, {
+        headers: { Authorization: `Bearer ${ACCESS_TOKEN}` }
+      });
 
-    const categoryId = itemResponse.data.object?.item_data?.category_id;
-    if (!categoryId) {
-      catalogCache[itemId] = 'Uncategorized';
-      return 'Uncategorized';
+      const obj = response.data.object;
+      if (obj?.type === 'ITEM_VARIATION') {
+        itemId = obj.item_variation_data?.item_id;
+        variationToItem[variationId] = itemId; // cache
+        console.log(`✅ Resolved itemId '${itemId}' from variation '${variationId}'`);
+      }
+    } catch (err) {
+      //console.warn(`❌ Cannot resolve variation ${variationId}: ${err.message}`);
+      return 'Unknown Variation';
     }
-
-    if (categoryNameCache[categoryId]) {
-      catalogCache[itemId] = categoryNameCache[categoryId];
-      return categoryNameCache[categoryId];
-    }
-
-    const categoryResponse = await axios.get(`${BASE_CATALOG_URL}/${categoryId}`, {
-      headers: { Authorization: `Bearer ${ACCESS_TOKEN}` }
-    });
-
-    const categoryName = categoryResponse.data.object?.category_data?.name || 'Unknown';
-    categoryNameCache[categoryId] = categoryName;
-    catalogCache[itemId] = categoryName;
-
-    return categoryName;
-  } catch (err) {
-    // Handle 404 errors (deleted or missing items)
-    if (err.response?.status === 404) {
-      catalogCache[itemId] = 'Deleted or Missing Item';
-      return 'Deleted or Missing Item';
-    }
-    console.warn(`⚠️ Error fetching catalog for ${itemId}:`, err.message);
-    catalogCache[itemId] = 'Unknown';
-    return 'Unknown';
   }
+
+  if (!itemId) {
+    //console.warn(`⚠️ Still no itemId for variation: ${variationId}`);
+    return 'Unknown Variation';
+  }
+
+  // 🧠 Step 2: Resolve categoryId from item, using new + legacy formats
+  let categoryId = itemToCategory[itemId];
+  if (!categoryId) {
+    try {
+      const itemRes = await axios.get(`https://connect.squareup.com/v2/catalog/object/${itemId}`, {
+        headers: { Authorization: `Bearer ${ACCESS_TOKEN}` }
+      });
+
+      const itemObj = itemRes.data.object;
+      const itemData = itemObj.item_data;
+
+      // 👇 Support all possible category sources
+      categoryId =
+        itemData?.category_id ||  // legacy
+        itemData?.reporting_category?.id || // new
+        (itemData?.categories?.[0]?.id ?? null); // fallback
+
+      itemToCategory[itemId] = categoryId; // cache it
+      //console.log(`🧾 Item '${itemId}' category: ${categoryId || 'NONE'}`);
+    } catch (err) {
+      //console.warn(`❌ Could not fetch item ${itemId}: ${err.message}`);
+      return 'Unknown Category';
+    }
+  }
+
+  if (!categoryId) return 'Uncategorized';
+
+  const categoryName = categoryIdToName[categoryId];
+  if (!categoryName) {
+    //console.warn(`⚠️ No category name for categoryId: ${categoryId}`);
+    return 'Unknown Category';
+  }
+
+  return categoryName;
 }
 
 async function getCategorySalesForMonth(month) {
@@ -112,27 +167,24 @@ async function getCategorySalesForMonth(month) {
     if (!order.line_items) continue;
 
     for (const lineItem of order.line_items) {
-      // Skip non-item line items (e.g., modifiers, custom charges)
       if (lineItem.item_type !== 'ITEM') continue;
 
-      const itemId = lineItem.catalog_object_id;
+      const variationId = lineItem.catalog_object_id || lineItem.variation_catalog_object_id;
       const amount = lineItem.total_money?.amount || 0;
 
-      if (!itemId) {
-        categorySales["Unknown"] = (categorySales["Unknown"] || 0) + amount;
-        continue;
-      }
-
-      const categoryName = await getCategoryNameFromItem(itemId);
-
-      categorySales[categoryName] = (categorySales[categoryName] || 0) + amount;
+      const category = await resolveCategoryNameWithFallback(variationId);
+      categorySales[category] = (categorySales[category] || 0) + amount;
     }
   }
 
   return categorySales;
 }
 
+// MAIN EXECUTION
 (async () => {
+  console.log("📦 Fetching full Square catalog...");
+  await fetchFullCatalog();
+
   for (const month of months) {
     console.log(`\n📅 Category Sales for ${month}:`);
     const categorySales = await getCategorySalesForMonth(month);
