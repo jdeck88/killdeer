@@ -7,56 +7,33 @@
 
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css" />
-  <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css" />
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-
-    .table-container {
-      overflow-x: auto;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      white-space: nowrap;
-      min-width: 140px;
-    }
-
-    th {
-      background-color: #f2f2f2;
-    }
-
-    .dataTables_wrapper {
-      overflow-x: auto;
-    }
-  </style>
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <h1>DASHBOARD</h1>
+  <h1>2025 FFCSA DASHBOARD</h1>
+  <p>
+  Generated from Local Line Data.  Overhead and COGS margin we will base on 2024 data.
+  <br>TODO: update numbers from actual QB data.
+  </p>
 
-  <div class="table-container">
-    <table id="weeklyKpiTable" class="display nowrap stripe row-border order-column">
-      <tbody id="tableBody">
-        <!-- JS fills this -->
-      </tbody>
-    </table>
-  </div>
+  <table id="ffcsaDashboardTable" class="display">
+    <thead>
+      <tr>
+        <th>KPI</th>
+        <th>YTD</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <!-- JS fills this -->
+    </tbody>
+  </table>
 
   <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js"></script>
-
   <script src="dashboard.js"></script>
 </body>
 </html>
