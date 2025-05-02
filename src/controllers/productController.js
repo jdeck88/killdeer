@@ -11,7 +11,10 @@ const tokenManager = require("../utils/tokenManager");
  */
 async function fetchProductData() {
   console.log('fetching product data')
-  const [results] = await utilities.db.query('SELECT * FROM pricelist WHERE available_on_ll = true');
+  const sqlQuery = `
+        SELECT id, category, productName, packageName, description, localLineProductID, visible, track_inventory, stock_inventory
+        FROM pricelist WHERE available_on_ll is true ORDER BY category, productName`;
+  const [results] = await utilities.db.query(sqlQuery);
   return results;
 }
 
@@ -22,8 +25,10 @@ async function updateInventoryById(productId, inventoryData) {
   const accessToken = await tokenManager.getValidAccessToken();
   const product = new Product(productId);
   await product.init();
-  await product.updateInventory(inventoryData, accessToken);
-  return { message: "Inventory updated" };
+
+  const updateStatus = await product.updateInventory(inventoryData, accessToken); 
+
+  return updateStatus;
 }
 
 /**
@@ -55,6 +60,7 @@ exports.updateInventory = async (req, res) => {
     const result = await updateInventoryById(req.params.id, req.body);
     res.json(result);
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: err.message });
   }
 };

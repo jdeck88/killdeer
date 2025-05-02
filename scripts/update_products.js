@@ -1,6 +1,8 @@
 const path = require('path');
 const env = process.env.NODE_ENV || 'development';
-require('dotenv').config({ path: path.resolve(__dirname, `../.env.${env}`) });
+const envPath = path.resolve(__dirname, `../.env.${env}`);
+require('dotenv').config({ path: envPath });
+console.log(`✅ Loaded environment: ${env} from ${envPath}`);
 
 const productController = require('../src/controllers/productController');
 const { getJwtToken } = require('../src/middleware/auth');

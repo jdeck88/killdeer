@@ -3,8 +3,10 @@ const helmet = require("helmet");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const path = require('path');
-const env = process.env.NODE_ENV || 'development';
-require('dotenv').config({ path: path.resolve(__dirname, `.env.${env}`) });
+const env = process.env.NODE_ENV || 'production';
+const envPath = path.resolve(__dirname, `.env.${env}`);
+require('dotenv').config({ path: envPath });
+console.log(`✅ Loaded environment: ${env} from ${envPath}`);
 
 const productRoutes = require("./src/routes/productRoutes");
 const authRoutes = require("./src/routes/authRoutes");
@@ -25,7 +27,6 @@ const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger.yaml');
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
 
 const PORT = 3402;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

@@ -1,6 +1,9 @@
 const path = require('path');
-const env = process.env.NODE_ENV || 'development';
-require('dotenv').config({ path: path.resolve(__dirname, `../.env.${env}`) });
+const env = process.env.NODE_ENV || 'production';
+const envPath = path.resolve(__dirname, `../.env.${env}`);
+require('dotenv').config({ path: envPath });
+console.log(`✅ Loaded environment: ${env} from ${envPath}`);
+
 const axios = require('axios');
 const utilities = require('../src/utils/utilities.pricing');
 
