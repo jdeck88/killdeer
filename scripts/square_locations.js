@@ -71,35 +71,40 @@ async function fetchOrdersForLocation(locationId, begin_time, end_time, cursor =
 }
 
 (async () => {
-	let dayArg = process.argv[2] || getPriorDayString();
-	const begin_time = formatDate(dayArg);
-	const end_time = formatDate(dayArg, true);
+	const startArg = process.argv[2] || getPriorDayString();
+	const endArg = process.argv[3] || startArg;
+	const begin_time = formatDate(startArg);
+	const end_time = formatDate(endArg, true);
 
-	console.log(`📆 Fetching orders for ${dayArg} (${begin_time} to ${end_time})`);
+	console.log(`📆 Fetching orders from ${startArg} to ${endArg} (${begin_time} to ${end_time})`);
 
 	const locations = await fetchLocationIds();
 	const salesByLocation = {};
+	const ordersByLocation = {};
 
 	for (const loc of locations) {
 		const orders = await fetchOrdersForLocation(loc.id, begin_time, end_time);
-		let total = 0;
+		if (!ordersByLocation[loc.id]) {
+			ordersByLocation[loc.id] = [];
+			salesByLocation[loc.id] = { name: loc.name, total: 0, orders: [] };
+		}
 
 		for (const order of orders) {
 			const amount = order.total_money?.amount || 0;
-			total += amount;
+			salesByLocation[loc.id].total += amount;
+			salesByLocation[loc.id].orders.push(order);
 		}
-
-		salesByLocation[loc.name] = total;
 	}
 
-	let summaryText = `📊 Square Sales Summary for ${dayArg}:
+	let summaryText = `📊 Square Sales Summary for ${startArg} to ${endArg}:
 \n`;
 	let totalMarketsWithSales = 0;
 	let grandTotal = 0;
 
-	for (const [loc, total] of Object.entries(salesByLocation)) {
+	for (const { name, total, orders } of Object.values(salesByLocation)) {
 		if (total > 0) {
-			summaryText += `${loc}: $${(total / 100).toFixed(2)}\n`;
+			summaryText += `🧾 ${name}\n`;
+			summaryText += `  Total Sales: $${(total / 100).toFixed(2)} from ${orders.length} orders\n\n`;
 			totalMarketsWithSales++;
 			grandTotal += total;
 		}
@@ -110,13 +115,13 @@ async function fetchOrdersForLocation(locationId, begin_time, end_time, cursor =
 		process.exit(0);
 	}
 
-	summaryText += `\nTotal: $${(grandTotal / 100).toFixed(2)}\n`;
+	summaryText += `💰 Grand Total: $${(grandTotal / 100).toFixed(2)}\n`;
 
 	const emailOptions = {
 		from: "jdeck88@gmail.com",
 		to: "info@deckfamilyfarm.com",
 		cc: "jdeck88@gmail.com",
-		subject: `Square Market Report: ${dayArg}`,
+		subject: `Square Market Report: ${startArg} to ${endArg}`,
 		text: summaryText
 	};
 
