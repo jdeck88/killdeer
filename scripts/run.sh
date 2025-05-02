@@ -28,3 +28,15 @@ fi
 # Execute the Node.js script
 node "$node_script" >> output.log 2>&1
 
+# Run github push when subscriptions file is run...
+echo $1
+if [ "$1" == "exportPricelistForViewing.js" ]; then
+  if [[ -n $(git status -s docs/masterPriceList.xlsx) ]]; then
+    git add ../docs/masterPriceList.xlsx
+    git commit -m "Updating masterPriceList"
+    git push
+    echo "Changes pushed to GitHub."
+  else
+    echo "No changes in data files."
+  fi
+fi
