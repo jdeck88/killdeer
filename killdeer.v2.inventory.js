@@ -2,19 +2,23 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
-require("dotenv").config();
+const path = require('path');
+const env = process.env.NODE_ENV || 'development';
+require('dotenv').config({ path: path.resolve(__dirname, `.env.${env}`) });
 
 const productRoutes = require("./src/routes/productRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 
 const app = express();
+app.set('trust proxy', 1); // ✅ Trust first proxy (e.g., nginx or Heroku)
+
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
 app.use(rateLimit({ windowMs: 5 * 60 * 1000, max: 100 }));
 
-app.use("/dff/v2", productRoutes);
-app.use("/dff/v2", authRoutes);        
+app.use("/killdeer/v2", productRoutes);
+app.use("/killdeer/v2", authRoutes);        
 
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
