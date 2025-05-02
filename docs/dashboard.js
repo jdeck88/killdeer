@@ -1,73 +1,74 @@
 $(document).ready(async function () {
-    const dataUrl = "https://raw.githubusercontent.com/jdeck88/ffcsa_scripts/main/localline/data/weekly_kpi.json";
+  const dataUrl = "https://raw.githubusercontent.com/jdeck88/ffcsa_scripts/main/localline/data/weekly_kpi.json";
+  const startDate = new Date("2025-01-01");
 
-    try {
-        const response = await fetch(dataUrl);
-        if (!response.ok) throw new Error(`Failed to fetch weekly data: ${response.statusText}`);
-        const jsonData = await response.json();
+  try {
+    const response = await fetch(dataUrl);
+    if (!response.ok) throw new Error(`Failed to fetch weekly data: ${response.statusText}`);
+    const jsonData = await response.json();
 
-        const weeksData = jsonData.weeks;
-        if (!Array.isArray(weeksData) || weeksData.length === 0) {
-            throw new Error("Invalid JSON format: Missing 'weeks' array.");
-        }
+    const weeks = (jsonData.weeks || []).filter(week => {
+      const endDateStr = week.dateRange.split(" to ")[1];
+      return new Date(endDateStr) >= startDate;
+    });
 
-        const totalSalesValues = weeksData.map(week => parseFloat(week.data.totalSales) || 0);
-        const totalRevenue = totalSalesValues.reduce((sum, sales) => sum + sales, 0);
-        const totalWeeks = weeksData.length;
+    if (weeks.length === 0) throw new Error("No data after Jan 1, 2025.");
 
-        const totalCOGS = totalRevenue * 0.25;
-        const totalGrossProfit = totalRevenue - totalCOGS;
-        const totalOverhead = 1000 * totalWeeks;
-        const totalNetProfit = totalGrossProfit - totalOverhead;
-        const netProfitMargin = (totalNetProfit / totalRevenue) * 100;
+    const totalSales = weeks.reduce((sum, w) => sum + parseFloat(w.data.totalSales || 0), 0);
+    const totalWeeks = weeks.length;
 
-        const kpis = [
-            { label: "Revenue", value: totalRevenue },
-            { label: "COGS (25%)", value: totalCOGS },
-            { label: "Gross Profit", value: totalGrossProfit },
-            { label: "Overhead ($1000/week)", value: totalOverhead },
-            { label: "Net Profit", value: totalNetProfit },
-            { label: "Net Profit Margin", value: `${netProfitMargin.toFixed(1)}%` }
-        ];
+    const totalCOGS = totalSales * 0.25;
+    const grossProfit = totalSales - totalCOGS;
+    const overhead = totalWeeks * 1000;
+    const netProfit = grossProfit - overhead;
+    const netMargin = (netProfit / totalSales) * 100;
 
-        // ✅ Add "YTD" column header
-        const headerRow = document.getElementById("headerRow");
-        const th = document.createElement("th");
-        th.textContent = "YTD";
-        headerRow.appendChild(th);
+    const kpis = [
+      { label: "Revenue", value: totalSales },
+      { label: "COGS (25%)", value: totalCOGS },
+      { label: "Gross Profit", value: grossProfit },
+      { label: "Overhead ($1000/week)", value: overhead },
+      { label: "Net Profit", value: netProfit },
+      { label: "Net Profit Margin", value: `${netMargin.toFixed(1)}%` }
+    ];
 
-        // ✅ Populate table body
-        const tableBody = document.getElementById("tableBody");
-        kpis.forEach(kpi => {
-            const tr = document.createElement("tr");
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = "";
 
-            const tdLabel = document.createElement("td");
-            tdLabel.textContent = kpi.label;
-            tr.appendChild(tdLabel);
+    kpis.forEach(kpi => {
+      const tr = document.createElement("tr");
 
-            const tdValue = document.createElement("td");
-            tdValue.textContent = typeof kpi.value === "number" ? `$${kpi.value.toFixed(2)}` : kpi.value;
-            tr.appendChild(tdValue);
+      const tdLabel = document.createElement("td");
+      tdLabel.textContent = kpi.label;
+      tr.appendChild(tdLabel);
 
-            tableBody.appendChild(tr);
-        });
+      const tdValue = document.createElement("td");
+      tdValue.textContent = typeof kpi.value === "number"
+        ? `$${kpi.value.toFixed(2)}`
+        : kpi.value;
+      tr.appendChild(tdValue);
 
-        // ✅ Initialize DataTable
-        $('#weeklyKpiTable').DataTable({
-            scrollX: true,
-            scrollCollapse: true,
-            paging: false,
-            ordering: false,
-            info: false,
-            searching: false,
-            fixedColumns: {
-                leftColumns: 1
-            }
-        });
+      tbody.appendChild(tr);
+    });
 
-        console.log("✅ YTD KPI data loaded successfully");
-    } catch (error) {
-        console.error("❌ Error loading KPI data:", error);
+    // Destroy previous instance if it exists
+    if ($.fn.DataTable.isDataTable('#weeklyKpiTable')) {
+      $('#weeklyKpiTable').DataTable().destroy();
     }
+
+    $('#weeklyKpiTable').DataTable({
+      scrollX: true,
+      scrollCollapse: true,
+      paging: false,
+      ordering: false,
+      info: false,
+      searching: false,
+      fixedColumns: { leftColumns: 1 }
+    });
+
+    console.log("✅ YTD KPI data loaded and table initialized.");
+  } catch (err) {
+    console.error("❌ KPI loading error:", err);
+  }
 });
 
