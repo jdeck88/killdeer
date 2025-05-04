@@ -108,8 +108,8 @@ async function fetchOrdersForLocation(locationId, begin_time, end_time, cursor =
 
 	for (const { name, total, orders } of Object.values(salesByLocation)) {
 		if (total > 0) {
-			summaryText += `🧾 ${name}\n`;
-			summaryText += `  Total Sales: $${(total / 100).toFixed(2)} from ${orders.length} orders\n\n`;
+			summaryText += `${name} Total Sales: `;
+			summaryText += `$${(total / 100).toFixed(2)}, from ${orders.length} orders\n`;
 			totalMarketsWithSales++;
 			grandTotal += total;
 		}
@@ -120,7 +120,7 @@ async function fetchOrdersForLocation(locationId, begin_time, end_time, cursor =
 		process.exit(0);
 	}
 
-	summaryText += `💰 Grand Total: $${(grandTotal / 100).toFixed(2)}\n`;
+	summaryText += `Grand Total: $${(grandTotal / 100).toFixed(2)}\n`;
 
 	const emailOptions = {
 		from: "jdeck88@gmail.com",
