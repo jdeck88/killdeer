@@ -31,6 +31,7 @@ class Product {
 	}
 
 	async addToLLPricelist(pricelistID, accessToken) {
+		console.log("adding " + this.productId + " to pricelist " + pricelistID)
 		const payload = { pricelist_id: pricelistID, product_id: this.productId };
 		await axios.post(`${utilities.LL_BASEURL}pricelists/add/`, payload, {
 			headers: { Authorization: `Bearer ${accessToken}` }
@@ -250,12 +251,26 @@ class Product {
 	// Entry for updating a product on a single pricelist
 	generateSinglePriceListEntry(basePrice, priceListEntry, markupDecimal) {
 		if (!priceListEntry) return null;
+		let calculated = parseFloat((basePrice * (1 + markupDecimal)).toFixed(2));
 
-		const calculated = parseFloat((basePrice * (1 + markupDecimal)).toFixed(2));
+		let adjustment_value = Number((markupDecimal * 100).toFixed(2));
+		let strikethrough_display_value = null;
+		const sale = true;
+		let on_sale_toggle = false;
+		const saleDeductValue = .1
+		const saleMarkup = markupDecimal - saleDeductValue;
+		if (sale) {
+			console.log("we have a sale!!")
+			on_sale_toggle = true;
+			strikethrough_display_value = calculated;
+			calculated = parseFloat((basePrice * (1 + saleMarkup)).toFixed(2));
+			adjustment_value = Number((saleMarkup* 100).toFixed(2));
+		} 
+
 		return {
 			adjustment: true,
 			adjustment_type: 2,
-			adjustment_value: Number((markupDecimal * 100).toFixed(2)),
+			adjustment_value: adjustment_value,
 			price_list: priceListEntry.price_list,
 			checked: true,
 			notSubmitted: false,
@@ -263,10 +278,10 @@ class Product {
 			dirty: true,
 			product_price_list_entry: priceListEntry.id,
 			calculated_value: calculated,
-			on_sale: false,
-			on_sale_toggle: false,
+			on_sale: sale,
+			on_sale_toggle: on_sale_toggle,
 			max_units_per_order: null,
-			strikethrough_display_value: null
+			strikethrough_display_value: strikethrough_display_value 
 		};
 	}
 
