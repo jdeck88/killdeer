@@ -37,6 +37,7 @@ const tokenManager = require("../src/utils/tokenManager");
 		const singleProduct = new Product(targetProductId);
 		await singleProduct.init();
 		const accessToken = await tokenManager.getValidAccessToken();
+		// TODO: input price here as a value from loop above.  Also incorporate this into loop and use select statement to just get one product!!
 		await singleProduct.updateLLPrices(5, accessToken);
 	} catch (err) {
 		console.error(`❌ Error initializing or serializing product:`, err);
