@@ -19,7 +19,7 @@ $(document).ready(async function () {
 
     const totalCOGS = totalSales * 0.25;
     const grossProfit = totalSales - totalCOGS;
-    const overhead = totalWeeks * 1000;
+    const overhead = totalWeeks * 8000;
     const netProfit = grossProfit - overhead;
     const netMargin = (netProfit / totalSales) * 100;
 
@@ -27,7 +27,7 @@ $(document).ready(async function () {
       { label: "Revenue", value: totalSales },
       { label: "COGS (25%)", value: totalCOGS },
       { label: "Gross Profit", value: grossProfit },
-      { label: "Overhead ($1000/week)", value: overhead },
+      { label: "Overhead", value: overhead },
       { label: "Net Profit", value: netProfit },
       { label: "Net Profit Margin", value: `${netMargin.toFixed(1)}%` }
     ];
@@ -43,27 +43,22 @@ $(document).ready(async function () {
       tr.appendChild(tdLabel);
 
       const tdValue = document.createElement("td");
-      tdValue.textContent = typeof kpi.value === "number"
-        ? `$${kpi.value.toFixed(2)}`
-        : kpi.value;
+      tdValue.textContent =
+        typeof kpi.value === "number"
+          ? `$${kpi.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+          : kpi.value;
       tr.appendChild(tdValue);
 
       tbody.appendChild(tr);
     });
 
-    // Destroy previous instance if it exists
-    if ($.fn.DataTable.isDataTable('#weeklyKpiTable')) {
-      $('#weeklyKpiTable').DataTable().destroy();
-    }
-
-    $('#weeklyKpiTable').DataTable({
-      scrollX: true,
-      scrollCollapse: true,
+    $('#ffcsaDashboardTable').DataTable({
+      autoWidth: false,
+      scrollX: false,
       paging: false,
-      ordering: false,
-      info: false,
       searching: false,
-      fixedColumns: { leftColumns: 1 }
+      info: false,
+      ordering: false
     });
 
     console.log("✅ YTD KPI data loaded and table initialized.");

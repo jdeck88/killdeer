@@ -125,3 +125,31 @@ tr.edited {
     outline: none;
     border-bottom: 2px solid #4CAF50;
 }
+
+
+#ffcsaDashboardTable th,
+#ffcsaDashboardTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+#ffcsaDashboardTable th {
+  background-color: #f2f2f2;
+}
+
+
+#ffcsaDashboardTable {
+  border-collapse: collapse;
+  width: auto !important;
+  display: table !important;
+  margin-left: 0; /* ✅ Left-align the table */
+}
+
+.dataTables_wrapper {
+  width: auto !important;
+  overflow-x: visible !important;
+  margin-left: 0 !important; /* ✅ Left-align the wrapper too */
+}
+
+
