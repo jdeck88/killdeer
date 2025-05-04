@@ -14,33 +14,26 @@ const tokenManager = require("../src/utils/tokenManager");
 	// 🔹 Loop All products (demonstrates loop and we can insert price update in this function)
 	try {
 		// TODO: obtain modification date in pricelist table and just select those that have been modified
-		const [rows] = await utilities.db.query("SELECT id FROM pricelist");
-		console.log(`🔎 Retrieved ${rows.length} product IDs from database.`);
+		const sql = "SELECT * FROM pricelist where localLineProductID = 935682 and available_on_ll"
+		const [rows] = await utilities.db.query(sql);
+		const accessToken = await tokenManager.getValidAccessToken();
 
+		console.log(`🔎 Retrieved ${rows.length} product IDs from database.`);
 		for (const row of rows) {
 			const product = new Product(row.id);
 			try {
 				await product.init();
-				console.log(`🟢 ID: ${product.productId}, LL ID: ${product.data.localLineProductID}, Name: ${product.data.productName}`);
+				//console.log(product.data.localLineProductID)
+				await product.updatePricelists(accessToken);
+				//console.log(`🟢 ID: ${product.productId}, LL ID: ${product.data.localLineProductID}, Name: ${product.data.productName}`);
 			} catch (err) {
 				console.error(`❌ Failed to initialize product ID ${row.id}:`, err.message);
+				console.log(err);
 			}
 		}
 	} catch (err) {
 		console.error("❌ Error fetching product IDs from database:", err.message);
 		process.exit(1);
-	}
-
-	// 🔹 Initialize and Print LL JSON for One Product
-	try {
-		const targetProductId = 7; // or use products[0]?.id
-		const singleProduct = new Product(targetProductId);
-		await singleProduct.init();
-		const accessToken = await tokenManager.getValidAccessToken();
-		// TODO: input price here as a value from loop above.  Also incorporate this into loop and use select statement to just get one product!!
-		await singleProduct.updateLLPrices(5, accessToken);
-	} catch (err) {
-		console.error(`❌ Error initializing or serializing product:`, err);
 	}
 
 	console.log("🎉 Script execution complete.");
