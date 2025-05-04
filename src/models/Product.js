@@ -9,6 +9,14 @@ class Product {
   constructor(productId) {
     this.productId = productId;
     this.data = null;
+    this.LL_PRICE_LISTS = JSON.parse(process.env.LL_PRICE_LISTS);
+    // Replace placeholder strings with actual values
+    for (const key in this.LL_PRICE_LISTS) {
+      const entry = this.LL_PRICE_LISTS[key];
+      if (entry.markup === 'MEMBER_MARKUP') entry.markup = parseFloat(process.env.MEMBER_MARKUP);
+      if (entry.markup === 'GUEST_MARKUP') entry.markup = parseFloat(process.env.GUEST_MARKUP);
+    }
+
   }
 
   async init() {
@@ -16,22 +24,10 @@ class Product {
     if (rows.length === 0) {
       throw new Error(`Product ID ${this.productId} not found in database`);
     }
-
     this.data = rows[0];
 
     // Now that data is loaded, calculate pricing
     this.pricing = this.#calculatePrices();
-  }
-
-  static async getLLCategory(pricelistID, category) {
-    /*const [rows] = await utilities.db.query(
-      "SELECT categoryID FROM categories WHERE pricelistID = ? AND categoryName = ?",
-      [pricelistID, category]
-    );
-    if (rows.length === 0) throw new Error("Category not found");
-    return rows[0].categoryID;*/
-    // TODO: fetch local line categoryID 
-    return 0;
   }
 
   async addToLLPricelist(pricelistID, accessToken) {
@@ -157,46 +153,118 @@ class Product {
     }
   }
 
-  async updatePackagePrice(accessToken) {
-    for (const listName in utilities.LL_PRICE_LISTS) {
-      const { id, markup } = utilities.LL_PRICE_LISTS[listName];
-      await updatePackagePriceInPricelist(accessToken, id);
-    }
+async updateLLPrices(price, accessToken) {
+  for (const listName in this.LL_PRICE_LISTS) {
+    const { id, markup } = this.LL_PRICE_LISTS[listName];
+    await this.updateSinglePriceList(this.data.localLineProductID, price, id, markup, accessToken);
   }
+}
 
-  async updatePackagePriceInPricelist(accessToken, pricelistID) {
+ // Run the udpater script
+async updateSinglePriceList(productId, newBasePrice, priceListID, markupDecimal, accessToken) {
+  // Get the first package 
+  // TODO: move this section here to its own function
+  try {
+    const { data: product } = await axios.get(utilities.LL_BASEURL + "products/"+ productId +"/",
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    const firstPackage = product.packages?.[0];
+    if (!firstPackage) {
+      console.error("❌ No package found for product", productId);
+      return;
+    }
+    const packageId = firstPackage.id;
+    const entry = (product.product_price_list_entries || []).find(
+      e => e.price_list === priceListID
+    );
+
+    if (!entry) {
+      const priceListName = Object.keys(this.LL_PRICE_LISTS).find(k => this.LL_PRICE_LISTS[k] === priceListID) || `ID ${priceListID}`;
+      console.warn(`⚠️ Product ${product.name} is not on price list "${priceListName}"`);
+
+      const now = new Date();
+      const timestamp = now.toLocaleString("en-US", {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      }).replace(",", "");
+      const message = `product does not appear in pricelist ${priceListName} (${priceListID})`;
+	  // TODO: restore missing links log
+	  /*
+      MISSING_LINKS_LOG.push({
+        timestamp: timestamp,
+        product_id: product.id,
+        product_name: product.name, 
+       missing_price_list: message
+      });
+	  */
+
+      return;
+    }
+
+    const priceListEntry = this.generateSinglePriceListEntry(newBasePrice, entry, markupDecimal);
+    if (!priceListEntry) return;
+
     const payload = {
-      packages: [{
-        id: this.data.localLineProductID,
-        name: this.data.packageName,  // TODO: make this work for packages
-        unit_price: this.pricing.purchasePrice,
-        package_code: this.data.upc,
-        price_list_entries: [{
-          price_list: pricelistID,
-          adjustment: true,
-          adjustment_type: 2,
-          adjustment_value: margin * 100,
-          calculated_value: (this.pricing.purchasePrice * (1 + margin)).toFixed(2)
-        }]
-      }],
-      description: this.data.description,
-      on_sale: false,  // TODO: CHECK THIS
-      category: this.data.category,
-      num_item_units: this.data.num_of_items
+      packages: [
+        {
+          id: packageId,
+          name: firstPackage.name,
+          unit_price: parseFloat(newBasePrice).toFixed(2),
+          package_price: parseFloat(newBasePrice).toFixed(2),
+          package_unit_price: parseFloat(newBasePrice).toFixed(2),
+          inventory_per_unit: 1,
+          price_list_entries: [priceListEntry]
+        }
+      ]
     };
 
-    try {
-      const url = `${utilities.LL_BASEURL}products/${this.data.localLineProductID}/?expand=vendor`;
-      await axios.patch(url, payload, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
-      console.log(`✅ Successfully updated product ID ${this.productId} on LocalLine`);
-    } catch (error) {
-      console.error(`❌ Failed to update LocalLine product.`);
-      console.error(`URL: ${error.config?.url}`);
-      console.error(`Error:`, error.response?.data || error.message);
-    }
+    //console.log(JSON.stringify(payload, null, 2));
+    await axios.patch( utilities.LL_BASEURL + "products/"+ productId +"/?expand=vendor",
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          Referer: utilities.LL_TEST_COMPANY_BASEURL,
+          Origin: utilities.LL_TEST_COMPANY_BASEURL
+        }
+      }
+    );
+
+    console.log(`✅ Updated ${product.name} (${productId}) on price list ${priceListID} to $${newBasePrice} with ${(markupDecimal * 100).toFixed(2)}% markup`);
+
+  } catch (err) {
+    console.error(`❌ Update failed for product ${productId}, price list ${priceListID}:`, err.response?.data || err.message);
+    //console.error(err)
   }
+}
+// Entry for updating a product on a single pricelist
+generateSinglePriceListEntry(basePrice, priceListEntry, markupDecimal) {
+  if (!priceListEntry) return null;
+
+  const calculated = parseFloat((basePrice * (1 + markupDecimal)).toFixed(2));
+  return {
+    adjustment: true,
+    adjustment_type: 2,
+    adjustment_value: Number((markupDecimal * 100).toFixed(2)),
+    price_list: priceListEntry.price_list,
+    checked: true,
+    notSubmitted: false,
+    edited: false,
+    dirty: true,
+    product_price_list_entry: priceListEntry.id,
+    calculated_value: calculated,
+    on_sale: false,
+    on_sale_toggle: false,
+    max_units_per_order: null,
+    strikethrough_display_value: null
+  };
+}
+
 
   #calculatePrices() {
     const DISCOUNT = parseFloat(process.env.DISCOUNT);

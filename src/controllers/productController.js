@@ -10,7 +10,6 @@ const tokenManager = require("../utils/tokenManager");
  * Fetch product data directly from DB
  */
 async function fetchProductData() {
-  console.log('fetching product data')
   const sqlQuery = `
         SELECT id, category, productName, packageName, description, localLineProductID, visible, track_inventory, stock_inventory
         FROM pricelist WHERE available_on_ll is true ORDER BY category, productName`;
