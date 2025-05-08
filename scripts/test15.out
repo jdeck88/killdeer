@@ -1,0 +1,283 @@
+✅ Loaded environment: production from /media/volume/sdc/code/killdeer/.env.production
+
+📋 INVOICE REPORT for Hillsdale: 2025-05-03 to 2025-05-04
+  Orders: 66
+  Total Sales: $1674.84
+
+🛒 CATEGORY SALES:
+  • Sausages & N Free Cures: $191.00
+  • Pasture Raised Pork: $285.39
+  • Beef, 100% grassfed: $463.95
+  • Eggs, Organic Layers: $211.00
+  • Fruits/Nuts Honey: $397.00
+  • Hyland Processing: $69.50
+  • Roasters & Turkeys: $12.00
+  • Spring Lamb: $45.00
+  --------------------------------------------------
+  Subtotal (Category Sales): $1674.84 for 82 items
+
+💵 RECEIVED:
+  • Cash Received:     $267.00
+  • Card Received:     $1410.59
+
+➕ ADDITIONS:
+  • Tips:              $0.00
+  • Service Charges:   $0.00
+
+➖ SUBTRACTIONS:
+  • Discounts:         -$9.52
+  • Returns:           -$0.00
+  • Refunds:           -$0.00
+  • Square Fees:       -$44.33
+
+✅ Net Deposit to Bank: $1366.26
+
+
+📋 INVOICE REPORT for Hollywood: 2025-05-03 to 2025-05-04
+  Orders: 107
+  Total Sales: $2644.83
+
+🛒 CATEGORY SALES:
+  • Eggs, Organic Layers: $765.80
+  • Pasture Raised Pork: $444.09
+  • Spring Lamb: $215.75
+  • Hyland Processing: $229.50
+  • Beef, 100% grassfed: $357.79
+  • Sausages & N Free Cures: $291.40
+  • Uncategorized: $43.00
+  • Fruits/Nuts Honey: $297.50
+  --------------------------------------------------
+  Subtotal (Category Sales): $2644.83 for 141 items
+
+💵 RECEIVED:
+  • Cash Received:     $510.80
+  • Card Received:     $2134.03
+
+➕ ADDITIONS:
+  • Tips:              $0.00
+  • Service Charges:   $0.00
+
+➖ SUBTRACTIONS:
+  • Discounts:         -$9.80
+  • Returns:           -$0.00
+  • Refunds:           -$0.00
+  • Square Fees:       -$66.68
+
+✅ Net Deposit to Bank: $2067.35
+
+
+📋 INVOICE REPORT for King: 2025-05-03 to 2025-05-04
+  Orders: 86
+  Total Sales: $2882.54
+
+🛒 CATEGORY SALES:
+  • Beef, 100% grassfed: $843.85
+  • Pasture Raised Pork: $353.09
+  • Fruits/Nuts Honey: $228.50
+  • Eggs, Organic Layers: $320.20
+  • Sausages & N Free Cures: $550.00
+  • Roasters & Turkeys: $24.00
+  • Spring Lamb: $267.40
+  • Hyland Processing: $295.50
+  --------------------------------------------------
+  Subtotal (Category Sales): $2882.54 for 149 items
+
+💵 RECEIVED:
+  • Cash Received:     $887.96
+  • Card Received:     $1994.58
+
+➕ ADDITIONS:
+  • Tips:              $0.00
+  • Service Charges:   $0.00
+
+➖ SUBTRACTIONS:
+  • Discounts:         -$4.80
+  • Returns:           -$0.00
+  • Refunds:           -$0.00
+  • Square Fees:       -$58.40
+
+✅ Net Deposit to Bank: $1936.18
+
+
+📋 INVOICE REPORT for LCFM: 2025-05-03 to 2025-05-04
+  Orders: 80
+  Total Sales: $1758.23
+
+🛒 CATEGORY SALES:
+  • Fruits/Nuts Honey: $161.50
+  • Eggs, Organic Layers: $386.60
+  • Sausages & N Free Cures: $364.55
+  • Spring Lamb: $151.90
+  • Hyland Processing: $112.00
+  • Pasture Raised Pork: $53.79
+  • Beef, 100% grassfed: $487.89
+  • Uncategorized: $40.00
+  --------------------------------------------------
+  Subtotal (Category Sales): $1758.23 for 106 items
+
+💵 RECEIVED:
+  • Cash Received:     $564.15
+  • Card Received:     $1214.08
+
+➕ ADDITIONS:
+  • Tips:              $0.00
+  • Service Charges:   $0.00
+
+➖ SUBTRACTIONS:
+  • Discounts:         -$22.23
+  • Returns:           -$0.00
+  • Refunds:           -$0.00
+  • Square Fees:       -$37.13
+
+✅ Net Deposit to Bank: $1176.95
+
+
+📋 INVOICE REPORT for Montavilla: 2025-05-03 to 2025-05-04
+  Orders: 72
+  Total Sales: $1831.77
+
+🛒 CATEGORY SALES:
+  • Beef, 100% grassfed: $542.66
+  • Fruits/Nuts Honey: $208.00
+  • Eggs, Organic Layers: $325.00
+  • Sausages & N Free Cures: $220.00
+  • Pasture Raised Pork: $289.47
+  • Hyland Processing: $169.50
+  • Spring Lamb: $65.14
+  • Roasters & Turkeys: $12.00
+  --------------------------------------------------
+  Subtotal (Category Sales): $1831.77 for 107 items
+
+💵 RECEIVED:
+  • Cash Received:     $265.50
+  • Card Received:     $1566.27
+
+➕ ADDITIONS:
+  • Tips:              $0.00
+  • Service Charges:   $0.00
+
+➖ SUBTRACTIONS:
+  • Discounts:         -$0.00
+  • Returns:           -$0.00
+  • Refunds:           -$0.00
+  • Square Fees:       -$48.80
+
+✅ Net Deposit to Bank: $1517.47
+
+
+📋 INVOICE REPORT for On Farm Sales: 2025-05-03 to 2025-05-04
+  Orders: 0
+  Total Sales: $0.00
+
+🛒 CATEGORY SALES:
+  --------------------------------------------------
+  Subtotal (Category Sales): $0.00 for 0 items
+
+💵 RECEIVED:
+  • Cash Received:     $0.00
+  • Card Received:     $0.00
+
+➕ ADDITIONS:
+  • Tips:              $0.00
+  • Service Charges:   $0.00
+
+➖ SUBTRACTIONS:
+  • Discounts:         -$0.00
+  • Returns:           -$0.00
+  • Refunds:           -$0.00
+  • Square Fees:       -$0.00
+
+✅ Net Deposit to Bank: $0.00
+
+
+📋 INVOICE REPORT for PSU: 2025-05-03 to 2025-05-04
+  Orders: 161
+  Total Sales: $3651.02
+
+🛒 CATEGORY SALES:
+  • Roasters & Turkeys: $36.00
+  • Beef, 100% grassfed: $833.28
+  • Eggs, Organic Layers: $1328.70
+  • Pasture Raised Pork: $238.71
+  • Sausages & N Free Cures: $399.50
+  • Hyland Processing: $172.00
+  • Fruits/Nuts Honey: $345.00
+  • Spring Lamb: $269.83
+  • Uncategorized: $28.00
+  --------------------------------------------------
+  Subtotal (Category Sales): $3651.02 for 218 items
+
+💵 RECEIVED:
+  • Cash Received:     $784.31
+  • Card Received:     $2929.31
+
+➕ ADDITIONS:
+  • Tips:              $0.00
+  • Service Charges:   $0.00
+
+➖ SUBTRACTIONS:
+  • Discounts:         -$9.70
+  • Returns:           -$17.00
+  • Refunds:           -$0.00
+  • Square Fees:       -$93.13
+
+✅ Net Deposit to Bank: $2836.18
+
+
+📋 INVOICE REPORT for St Johns: 2025-05-03 to 2025-05-04
+  Orders: 81
+  Total Sales: $2028.93
+
+🛒 CATEGORY SALES:
+  • Beef, 100% grassfed: $453.09
+  • Sausages & N Free Cures: $342.00
+  • Pasture Raised Pork: $390.04
+  • Hyland Processing: $192.50
+  • Eggs, Organic Layers: $288.40
+  • Fruits/Nuts Honey: $248.40
+  • Uncategorized: $69.50
+  • Spring Lamb: $45.00
+  --------------------------------------------------
+  Subtotal (Category Sales): $2028.93 for 116 items
+
+💵 RECEIVED:
+  • Cash Received:     $240.37
+  • Card Received:     $1788.56
+
+➕ ADDITIONS:
+  • Tips:              $0.00
+  • Service Charges:   $0.00
+
+➖ SUBTRACTIONS:
+  • Discounts:         -$55.00
+  • Returns:           -$32.10
+  • Refunds:           -$0.00
+  • Square Fees:       -$55.93
+
+✅ Net Deposit to Bank: $1732.63
+
+
+📋 INVOICE REPORT for Woodstock: 2025-05-03 to 2025-05-04
+  Orders: 0
+  Total Sales: $0.00
+
+🛒 CATEGORY SALES:
+  --------------------------------------------------
+  Subtotal (Category Sales): $0.00 for 0 items
+
+💵 RECEIVED:
+  • Cash Received:     $0.00
+  • Card Received:     $0.00
+
+➕ ADDITIONS:
+  • Tips:              $0.00
+  • Service Charges:   $0.00
+
+➖ SUBTRACTIONS:
+  • Discounts:         -$0.00
+  • Returns:           -$0.00
+  • Refunds:           -$0.00
+  • Square Fees:       -$0.00
+
+✅ Net Deposit to Bank: $0.00
+
