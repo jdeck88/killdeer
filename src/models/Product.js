@@ -252,14 +252,15 @@ class Product {
 	generateSinglePriceListEntry(basePrice, priceListEntry, markupDecimal) {
 		if (!priceListEntry) return null;
 		let calculated = parseFloat((basePrice * (1 + markupDecimal)).toFixed(2));
-
 		let adjustment_value = Number((markupDecimal * 100).toFixed(2));
 		let strikethrough_display_value = null;
+
 		const sale = true;
 		let on_sale_toggle = false;
-		const saleDeductValue = .1
-		const saleMarkup = markupDecimal - saleDeductValue;
+		const saleDeductValue = .5
+
 		if (sale) {
+			const saleMarkup = markupDecimal - saleDeductValue;
 			console.log("we have a sale!!")
 			on_sale_toggle = true;
 			strikethrough_display_value = calculated;
