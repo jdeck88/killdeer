@@ -78,7 +78,9 @@ async function fetchOrders(locationId, begin, end, cursor = null, collected = []
 		location_ids: [locationId],
 		query: {
 			filter: {
-				date_time_filter: { created_at: { start_at: begin, end_at: end } }
+				date_time_filter: { created_at: { start_at: begin, end_at: end } },
+				    state_filter: { states: ['COMPLETED'] }
+
 			}
 		},
 		limit: 100
@@ -185,6 +187,7 @@ async function resolveCategoryName(variationId) {
 		};
 
 		for (const order of orders) {
+			//console.log(order.total_money.amount/100+','+summary.orderCount );
 			summary.orderCount++;
 			summary.locationTotal += order.total_money?.amount || 0;
 			summary.discounts += order.total_discount_money?.amount || 0;
@@ -205,6 +208,8 @@ async function resolveCategoryName(variationId) {
 			if (order.tenders) {
 				for (const tender of order.tenders) {
 					const amt = tender.amount_money?.amount || 0;
+					// Add in processing_fee_money which is used in split transactions
+					summary.fees += tender.processing_fee_money?.amount || 0;
 					if (tender.type === 'CASH') summary.cash += amt;
 					if (tender.type === 'CARD') summary.card += amt;
 					if (tender.payment_id) {
@@ -231,8 +236,9 @@ async function resolveCategoryName(variationId) {
 			}
 		}
 
-		const net = summary.card - summary.fees - summary.card_refunds - summary.cash_refunds;
-		if (net > 0) locationSummaries[loc.name] = { ...summary, net };
+		//const net = summary.card - summary.fees - summary.card_refunds - summary.cash_refunds;
+		const net_deposit = summary.card - summary.fees - summary.card_refunds; 
+		if (net_deposit > 0) locationSummaries[loc.name] = { ...summary, net_deposit };
 	}
 
 	const grand = {
@@ -246,7 +252,7 @@ async function resolveCategoryName(variationId) {
 		fees: 0,
 		card_refunds: 0,
 		cash_refunds: 0,
-		net: 0
+		net_deposit: 0
 	};
 
 	for (const summary of Object.values(locationSummaries)) {
@@ -260,7 +266,7 @@ async function resolveCategoryName(variationId) {
 		grand.fees += summary.fees;
 		grand.cash_refunds += summary.cash_refunds;
 		grand.card_refunds += summary.card_refunds;
-		grand.net += summary.net;
+		grand.net_deposit += summary.net_deposit; 
 	}
 
 	let summaryText = `** LOCATION REPORT: ${startArg} to ${endArg} **\n`;
@@ -291,12 +297,13 @@ async function resolveCategoryName(variationId) {
 	}
 
 	summaryText += `Categories Subtotal: $${(Object.values(allCategorySales).reduce((a, b) => a + b, 0) / 100).toFixed(2)}\n`;
-	summaryText += `  • Cash Refunds:     -$${(grand.cash_refunds / 100).toFixed(2)}\n`;
-	summaryText += `  • Square Fees:      -$${(grand.fees / 100).toFixed(2)}\n`;
+	//summaryText += `  • Cash Refunds:     -$${(grand.cash_refunds / 100).toFixed(2)}\n`;
+	summaryText += `  • Square Fees: -$${(grand.fees / 100).toFixed(2)}\n`;
 
-	summaryText += `\n** NOTES **\n`;
-	summaryText += `  • Total Cash Received:     $${(grand.cash / 100).toFixed(2)}\n`;
-	summaryText += `  • Total Cards Received:    $${(grand.card / 100).toFixed(2)}\n`;
+	summaryText += `\n** DEPOSITS **\n`;
+	summaryText += `  • Cash: $${(grand.cash / 100).toFixed(2)}\n`;
+	summaryText += `  • Cards: $${(grand.card / 100).toFixed(2)}\n`;
+	summaryText += `Deposits Subtotal: $${(grand.net_deposit / 100).toFixed(2)}\n`;
 
 	if (grand.tips > 0 || grand.serviceCharges > 0) {
 		summaryText += `\nPossible ADDITIONS:\n`;
@@ -308,7 +315,6 @@ async function resolveCategoryName(variationId) {
 		}
 	}
 
-	summaryText += `  • Net Deposits to Bank: $${(grand.net / 100).toFixed(2)}\n`;
 
 	const emailOptions = {
 		from: "jdeck88@gmail.com",
@@ -320,6 +326,7 @@ async function resolveCategoryName(variationId) {
 
 	await utilities.sendEmail(emailOptions);
 	console.log("📧 Email sent.");
+	//console.log(summaryText)
 	process.exit(0);
 
 })();
