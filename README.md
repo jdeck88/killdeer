@@ -9,5 +9,5 @@ npm start
 
 Testing:
 ```
-http://localhost:3402/dff/v2/get-product-data
+http://localhost:3402/killdeer/v2/get-product-data
 ```
