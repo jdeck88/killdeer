@@ -302,11 +302,10 @@ async function resolveCategoryName(variationId) {
 
 	summaryText += `\n** DEPOSITS **\n`;
 	summaryText += `  • Cash: $${(grand.cash / 100).toFixed(2)}\n`;
-	summaryText += `  • Cards: $${(grand.card / 100).toFixed(2)}\n`;
-	summaryText += `Deposits Subtotal: $${(grand.net_deposit / 100).toFixed(2)}\n`;
+	summaryText += `  • Cards: $${(grand.net_deposit / 100).toFixed(2)}\n`;
 
 	if (grand.tips > 0 || grand.serviceCharges > 0) {
-		summaryText += `\nPossible ADDITIONS:\n`;
+		summaryText += `\n** Possible ADDITIONS **\n`;
 		if (grand.tips > 0) {
 			summaryText += `  • Tips:              $${(grand.tips / 100).toFixed(2)}\n`;
 		}
@@ -314,7 +313,6 @@ async function resolveCategoryName(variationId) {
 			summaryText += `  • Service Charges:   $${(grand.serviceCharges / 100).toFixed(2)}\n`;
 		}
 	}
-
 
 	const emailOptions = {
 		from: "jdeck88@gmail.com",
