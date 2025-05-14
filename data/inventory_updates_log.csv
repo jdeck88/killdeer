@@ -8,3 +8,37 @@ id,productName,packageName,visible,track_inventory,stock_inventory,timestamp
 134,Bavette Steak,0.9 - 1.6 lbs,false,false,0,2025-05-02T21:59:44.757Z
 134,Bavette Steak,0.9 - 1.6 lbs,true,false,0,2025-05-02T22:01:21.992Z
 134,Bavette Steak,0.9 - 1.6 lbs,false,false,0,2025-05-02T22:01:25.952Z
+9,Beef Marrow Bones,3.00 - 5.00 lbs,true,true,5,2025-05-07T23:49:42.776Z23,Beef Oxtail,1.40 - 1.90 lbs,false,false,6,2025-05-07T23:49:42.781Z27,Beef Short Rib,1.30 - 2.10 lbs,true,false,0,2025-05-07T23:49:42.783Z134,Bavette Steak,0.9 - 1.6 lbs,true,true,7,2025-05-07T23:49:42.785Z15,Beef Flat Iron Steak,0.70 - 1.10 lbs,true,true,20,2025-05-07T23:49:42.786Z32,Beef Tenderloin,0.40 - 0.70 lbs,true,true,4,2025-05-07T23:49:42.788Z
+
+
+
+
+
+26,Korean Style Beef Ribs,1.20 - 1.40 lbs,false,false,0,2025-05-07T23:49:43.231Z
+22,New York Steak,0.50 - 0.90 lbs,true,false,0,2025-05-07T23:49:43.351Z25,Ribeye Steak,0.80 - 1.10 lbs,true,false,0,2025-05-07T23:49:43.354Z
+
+30,"Skirt Steak, Large","Large, .80 - 1.20 lbs",true,true,13,2025-05-07T23:49:43.364Z34,Beef Tongue,2.50 - 3.00 lbs,true,true,4,2025-05-07T23:49:43.366Z
+
+29,"Skirt Steak, Small","Small, 0.40 - 0.79 lbs",true,true,5,2025-05-07T23:49:43.409Z
+36,Beef Tri-Tip,1.90 - 2.20 lbs,true,true,3,2025-05-07T23:49:43.750Z
+11,"Brisket, Medium","Medium, 3.00 - 3.99 lbs",true,true,13,2025-05-07T23:49:43.873Z
+10,"Brisket, Small","Small, 2.30 - 2.99 lbs",true,true,12,2025-05-07T23:49:43.920Z
+12,"Brisket, Large","Large, 4.00 - 5.00 lbs",true,true,2,2025-05-07T23:49:43.961Z13,Chuck roast,2.30 - 2.90 lbs,true,false,0,2025-05-07T23:49:43.963Z
+
+14,Flank Steak,1.10 - 1.40 lbs,true,true,4,2025-05-07T23:49:43.966Z
+18,Hanger Steak,0.40 - 0.70 lbs,true,true,5,2025-05-07T23:49:44.297Z
+33,Teres Major Steak,0.40 - 0.70 lbs,true,true,8,2025-05-07T23:49:44.424Z
+35,Top Sirloin Steak,1.30 - 1.60 lbs,true,false,0,2025-05-07T23:49:44.452Z112,Farm Made Chorizo Sausage Links,4 links/ pack 14 oz pack,false,false,0,2025-05-07T23:49:44.454Z
+
+124,"Rendered Pork Leaf Lard, 8 oz",8 oz,true,false,0,2025-05-07T23:49:44.504Z
+70,Lamb Kabob,1.1 - 1.35,true,false,0,2025-05-07T23:49:44.516Z
+76,Lamb Stew,0.90 - 1.10 lbs,false,false,0,2025-05-07T23:49:44.761Z
+48,Pork Tenderloin,0.80 - 1.30 lbs,true,true,14,2025-05-07T23:49:44.890Z
+39,Baby Back Ribs,0.90 - 1.50 lbs,true,true,12,2025-05-07T23:49:44.916Z
+57,"Chicken Part, Wings",1.50 - 2.00,false,false,0,2025-05-07T23:49:44.968Z
+11,"Brisket, Medium","Medium, 3.00 - 3.99 lbs",false,false,0,2025-05-09T20:06:07.102Z12,"Brisket, Large","Large, 4.00 - 5.00 lbs",false,false,0,2025-05-09T20:06:07.105Z10,"Brisket, Small","Small, 2.30 - 2.99 lbs",false,false,0,2025-05-09T20:06:07.106Z
+
+
+132,Salami de Ouvrier,4.5 oz,false,false,0,2025-05-09T21:04:39.877Z
+134,Bavette Steak,0.9 - 1.6 lbs,false,true,7,2025-05-14T20:18:25.991Z
+134,Bavette Steak,0.9 - 1.6 lbs,true,true,7,2025-05-14T20:18:30.626Z
