@@ -42,3 +42,30 @@ id,productName,packageName,visible,track_inventory,stock_inventory,timestamp
 132,Salami de Ouvrier,4.5 oz,false,false,0,2025-05-09T21:04:39.877Z
 134,Bavette Steak,0.9 - 1.6 lbs,false,true,7,2025-05-14T20:18:25.991Z
 134,Bavette Steak,0.9 - 1.6 lbs,true,true,7,2025-05-14T20:18:30.626Z
+9,Beef Marrow Bones,3.00 - 5.00 lbs,false,false,0,2025-05-15T23:21:50.455Z23,Beef Oxtail,1.40 - 1.90 lbs,true,true,6,2025-05-15T23:21:50.459Z134,Bavette Steak,0.9 - 1.6 lbs,false,false,0,2025-05-15T23:21:50.461Z15,Beef Flat Iron Steak,0.70 - 1.10 lbs,true,true,6,2025-05-15T23:21:50.463Z
+
+
+
+19,Beef Heart,2.50 - 3.5 lbs,true,true,3,2025-05-15T23:21:50.467Z32,Beef Tenderloin,0.40 - 0.70 lbs,false,false,0,2025-05-15T23:21:50.469Z
+
+34,Beef Tongue,2.50 - 3.00 lbs,true,true,4,2025-05-15T23:21:51.043Z
+36,Beef Tri-Tip,1.90 - 2.20 lbs,false,false,0,2025-05-15T23:21:51.052Z
+12,"Brisket, Large","Large, 4.00 - 5.00 lbs",true,true,2,2025-05-15T23:21:51.095Z11,"Brisket, Medium","Medium, 3.00 - 3.99 lbs",true,true,6,2025-05-15T23:21:51.097Z
+
+10,"Brisket, Small","Small, 2.30 - 2.99 lbs",true,true,8,2025-05-15T23:21:51.159Z
+14,Flank Steak,1.10 - 1.40 lbs,true,true,5,2025-05-15T23:21:51.584Z
+18,Hanger Steak,0.40 - 0.70 lbs,false,false,0,2025-05-15T23:21:51.653Z
+30,"Skirt Steak, Large","Large, .80 - 1.20 lbs",false,false,0,2025-05-15T23:21:51.776Z
+29,"Skirt Steak, Small","Small, 0.40 - 0.79 lbs",false,false,0,2025-05-15T23:21:51.811Z
+33,Teres Major Steak,0.40 - 0.70 lbs,false,false,0,2025-05-15T23:21:51.820Z
+128,Chorizo Verde,4 links/ pack 14 oz pack,true,true,11,2025-05-15T23:21:51.985Z
+35,Top Sirloin Steak,1.30 - 1.60 lbs,true,true,15,2025-05-15T23:21:52.284Z
+112,Farm Made Chorizo Sausage Links,4 links/ pack 14 oz pack,true,true,4,2025-05-15T23:21:52.343Z
+108,"Rendered Beef Tallow, 16 oz",16 oz,true,true,3,2025-05-15T23:21:52.400Z
+107,"Rendered Beef Tallow, 8 oz",8 oz,false,false,0,2025-05-15T23:21:52.477Z
+123,"Rendered Pork Leaf Lard, 16 oz",16 oz,true,true,4,2025-05-15T23:21:52.515Z
+39,Baby Back Ribs,0.90 - 1.50 lbs,true,true,14,2025-05-15T23:21:52.740Z
+76,Lamb Stew,0.90 - 1.10 lbs,true,true,15,2025-05-15T23:21:52.827Z
+48,Pork Tenderloin,0.80 - 1.30 lbs,true,true,12,2025-05-15T23:21:52.873Z
+117,Bulk Thai Curry Sausage,12 oz,true,true,5,2025-05-15T23:27:30.088Z26,Korean Style Beef Ribs,1.20 - 1.40 lbs,true,true,9,2025-05-15T23:27:30.091Z
+
