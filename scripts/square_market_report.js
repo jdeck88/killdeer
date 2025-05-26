@@ -12,7 +12,6 @@ const BASE_ORDERS_URL = 'https://connect.squareup.com/v2/orders/search';
 const BASE_CATALOG_URL = 'https://connect.squareup.com/v2/catalog/list';
 const BASE_OBJECT_URL = 'https://connect.squareup.com/v2/catalog/object';
 const BASE_PAYMENTS_URL = 'https://connect.squareup.com/v2/payments';
-const BASE_REFUNDS_URL = 'https://connect.squareup.com/v2/refunds';
 
 const variationToItem = {};
 const itemToCategory = {};
@@ -20,6 +19,15 @@ const categoryIdToName = {};
 const allCategorySales = {};
 const allCategoryCOGS = {};
 const gpprByCategory = {};
+
+const { DateTime } = require('luxon');  // At top of file, if not already
+
+function formatLine(label, amount = null, prefix = '', note = '') {
+  const labelCol = label.padEnd(28);
+  const amountCol = amount !== null ? `${prefix}$${(amount / 100).toFixed(2).padStart(8)}` : '';
+  const spacing = amount !== null ? '  ' : '';
+  return `  • ${labelCol}${amountCol}${spacing}${note}\n`;
+}
 
 function formatDate(dateStr, isEnd = false) {
   const date = new Date(dateStr);
@@ -189,9 +197,11 @@ async function resolveCategoryName(variationId) {
 
       if (order.line_items) {
         for (const item of order.line_items) {
-          if (item.item_type !== 'ITEM') continue;
-          const variationId = item.catalog_object_id;
           const amount = item.total_money?.amount || 0;
+
+          if (item.item_type !== 'ITEM') continue;
+
+          const variationId = item.catalog_object_id;
           const category = await resolveCategoryName(variationId);
           allCategorySales[category] = (allCategorySales[category] || 0) + amount;
 
@@ -254,14 +264,14 @@ async function resolveCategoryName(variationId) {
     grand.net_deposit += summary.net_deposit;
   }
 
-  let summaryText = `** MARKET INCOME REPORT: ${startArg} to ${endArg} **\n\n`;
+  // Convert current time to Pacific Time
+  const pacificTime = DateTime.now().setZone('America/Los_Angeles').toFormat('yyyy-MM-dd HH:mm');
 
-  for (const [name, s] of Object.entries(locationSummaries)) {
-    summaryText += `  • ${name}: $${((s.locationTotal - s.cash_refunds - s.card_refunds) / 100).toFixed(2)} (${s.orderCount} orders)\n`;
-  }
+  // Build summaryText
+  let summaryText = `SQUARE MARKET REPORT: ${startArg} to ${endArg}\n`;
+  summaryText += `Generated on ${pacificTime}\n`;
 
-  summaryText += `\n** CATEGORY SALES + COGS **\n`;
-
+  summaryText += `\nCATEGORY SALES:\n`;
   let totalRevenue = 0;
   let totalCOGS = 0;
 
@@ -269,26 +279,42 @@ async function resolveCategoryName(variationId) {
     const cogs = allCategoryCOGS[cat] || 0;
     const gppr = gpprByCategory[cat] ?? 0.5;
     const gpprPercent = (gppr * 100).toFixed(0);
-
     totalRevenue += amt;
     totalCOGS += cogs;
 
-    summaryText += `  • ${cat}: Revenue $${(amt / 100).toFixed(2)}, COGS $${(cogs / 100).toFixed(2)}, GPPR ${gpprPercent}%\n`;
+    const note = `(COGS $${(cogs / 100).toFixed(2)}, GPPR ${gpprPercent}%)`;
+    summaryText += formatLine(cat, amt, '', note);
   }
+  summaryText += formatLine('Subtotal', totalRevenue);
 
+  summaryText += `\nDEDUCTIONS:\n`;
+  summaryText += formatLine('Fees', grand.fees, '-');
+  summaryText += formatLine('Refunds', grand.cash_refunds + grand.card_refunds, '-');
+  summaryText += formatLine('FM Weekend Costs', null, '', 'DEDUCT WAGES/PER DIEMS PAID IN CASH');
+  summaryText += formatLine('FM Supplies & Facility Fees ', null, '', 'DEDUCT WAGES/PER DIEMS PAID IN CASH');
+  summaryText += formatLine('FM Booth Fees/Supplies', null, '', 'DEDUCT BOOTH FEES/MISC EXPENSES IN CASH');
+  summaryText += formatLine('Tokens', null, '', 'DEDUCT TOKENS RECORDED AS CASH SALES');
 
-  summaryText += `\n** TOTALS **\n`;
-  summaryText += `  • Net Sales:     $${(totalRevenue / 100).toFixed(2)}\n`;
-  summaryText += `  • Weighted COGS: $${(totalCOGS / 100).toFixed(2)}\n`;
-  summaryText += `  • Gross Profit:  $${((totalRevenue - totalCOGS) / 100).toFixed(2)}\n`;
+  summaryText += `\nEXPECTED DEPOSITS:\n`;
+  summaryText += formatLine('Cards', grand.net_deposit);
+  summaryText += formatLine('Cash', grand.cash, '', '- DEDUCTIONS ABOVE');
 
+  summaryText += `\nSUMMARY STATISTICS:\n`;
+  summaryText += formatLine('Weighted COGS', totalCOGS);
+  summaryText += formatLine('Gross Profit', totalRevenue - totalCOGS);
+  summaryText += formatLine('Discounts', grand.discounts, '-');
+  summaryText += formatLine('Cash Refunds', grand.cash_refunds, '-');
+  summaryText += formatLine('Card Refunds', grand.card_refunds, '-');
+  summaryText += formatLine('Discounts/Refunds Total', grand.discounts + grand.cash_refunds + grand.card_refunds, '-');
   const weightedGppr = totalRevenue > 0 ? ((1 - (totalCOGS / totalRevenue)) * 100).toFixed(1) : '0.0';
-  summaryText += `  • Weighted GPPR: ${weightedGppr}%\n`;
+  summaryText += formatLine('Weighted GPPR', null, '', `${weightedGppr}%`);
 
-  summaryText += `\n** DEPOSITS **\n`;
-  summaryText += `  • Cash:  $${(grand.cash / 100).toFixed(2)}\n`;
-  summaryText += `  • Card:  $${(grand.net_deposit / 100).toFixed(2)}\n`;
-  summaryText += `  • Fees:  -$${(grand.fees / 100).toFixed(2)}\n`;
+  summaryText += `\nLOCATION SALES:\n`;
+  for (const [name, s] of Object.entries(locationSummaries)) {
+    const netSales = s.locationTotal - s.cash_refunds - s.card_refunds;
+    const note = `(${s.orderCount} orders)`;
+    summaryText += formatLine(name, netSales, '', note);
+  }
 
   try {
     await utilities.sendEmail({
@@ -296,7 +322,7 @@ async function resolveCategoryName(variationId) {
       to: "info@deckfamilyfarm.com",
       cc: "jdeck88@gmail.com",
       subject: `Square Market Report: ${startArg} to ${endArg}`,
-      text: summaryText
+      html: `<pre>${summaryText}</pre>`
     });
     console.log("📧 Email sent.");
     process.exit(0);
@@ -306,4 +332,3 @@ async function resolveCategoryName(variationId) {
   }
 
 })();
-
