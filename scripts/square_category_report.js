@@ -185,14 +185,40 @@ async function resolveCategoryNameWithFallback(variationId) {
       if (!order.line_items) continue;
 
       for (const lineItem of order.line_items) {
+        const amount = lineItem.total_money?.amount || 0;
+
+        // Handle refunds and negative totals as Square Fees
+        if (amount < 0) {
+          categorySales['Square Fees'] = (categorySales['Square Fees'] || 0) + amount;
+          continue;
+        }
+
         if (lineItem.item_type !== 'ITEM') continue;
 
         const variationId = lineItem.catalog_object_id || lineItem.variation_catalog_object_id;
-        const amount = lineItem.total_money?.amount || 0;
-
         const category = await resolveCategoryNameWithFallback(variationId);
         categorySales[category] = (categorySales[category] || 0) + amount;
       }
+
+      // Handle applied discounts (apply to Square Fees total)
+      if (order.tenders) {
+        for (const tender of order.tenders) {
+          if (tender.amount_money?.amount && tender.processing_fee_money?.amount) {
+            const fee = tender.processing_fee_money.amount;
+            categorySales['Square Fees'] = (categorySales['Square Fees'] || 0) + fee;
+          }
+        }
+      }
+
+      if (order.discounts) {
+        for (const discount of order.discounts) {
+          const amount = discount.amount_money?.amount || 0;
+          if (amount > 0) {
+            categorySales['Square Fees'] = (categorySales['Square Fees'] || 0) + amount;
+          }
+        }
+      }
+
     }
   }
 
