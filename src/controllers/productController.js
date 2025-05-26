@@ -9,11 +9,27 @@ const tokenManager = require("../utils/tokenManager");
 /**
  * Fetch product data directly from DB
  */
+/**
+ * Fetch product data directly from DB, now using normalized category table
+ */
 async function fetchProductData() {
-  console.log('fetching product data')
+  console.log('fetching product data');
   const sqlQuery = `
-        SELECT id, category, productName, packageName, description, localLineProductID, visible, track_inventory, stock_inventory
-        FROM pricelist WHERE available_on_ll is true ORDER BY category, productName`;
+    SELECT
+      p.id,
+      c.name AS category,
+      p.productName,
+      p.packageName,
+      p.description,
+      p.localLineProductID,
+      p.visible,
+      p.track_inventory,
+      p.stock_inventory
+    FROM pricelist p
+    JOIN category c ON p.category_id = c.id
+    WHERE p.available_on_ll IS TRUE
+    ORDER BY c.name, p.productName`;
+
   const [results] = await utilities.db.query(sqlQuery);
   return results;
 }

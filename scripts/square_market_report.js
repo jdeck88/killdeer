@@ -50,12 +50,18 @@ function getPreviousWeekendRange() {
 }
 
 async function loadGpprFromDatabase() {
-  const sql = `SELECT category, gppr FROM pricelist WHERE gppr IS NOT NULL`;
+  const sql = `
+    SELECT c.name AS category, c.gppr
+    FROM pricelist p
+    JOIN category c ON p.category_id = c.id
+    WHERE c.gppr IS NOT NULL`;
+
   const [rows] = await utilities.db.query(sql);
   for (const row of rows) {
     gpprByCategory[row.category] = parseFloat(row.gppr);
   }
 }
+
 
 async function fetchFullCatalog() {
   let cursor = null;
